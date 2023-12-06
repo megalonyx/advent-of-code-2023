@@ -26,11 +26,14 @@ def try_race(r):
 def main():
 #    races = read_data('test.txt')
     races = read_data('input.txt')
-#    print(races)
     margin_prod = 1
     for r in races:
         margin_prod *= try_race(r)
     print(margin_prod)
+#    val = try_race( (71530, 940200) )
+    val = try_race( (58819676, 434104122191218) )
+    print('---')
+    print(val)
 
 if __name__ == '__main__':
     main()
