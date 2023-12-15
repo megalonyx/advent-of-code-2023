@@ -100,34 +100,37 @@ def advance(rows, here, coming_from_direction):
     print('choosing dir:', new_direction)
     return new_direction
     
-# DOES NOT WORK CORRECTLY
-def count_inside_of_row(rows, r):
-    # winding number: odd -> inside, even -> outside
-    # count all '.' that are inside
-    # windind number does change only with part of loop
-    # '-' does not change winding number
-    inside = False
-    cnt = 0
-    for c in range(len(rows[r])):
-        if looppart[r][c]:
-            if rows[r][c] != '-':
-                inside = not inside
-            continue
-        if inside:
-            cnt += 1
-    return cnt
+def count_field(rows, r, c):
+    nrows = len(rows)
+    ncols = len(rows[0])
+    if looppart[r][c]:
+        return 0
+    crossings = 0
+    r2, c2 = r, c
+    while r2 < nrows and c2 < ncols:
+        x = rows[r2][c2]
+        if looppart[r2][c2] and x != 'L' and x != '7':
+            crossings += 1
+        r2 += 1
+        c2 += 1
+    return crossings % 2
+
+def count_inside(rows):
+    total = 0
+    for r in range(len(rows)):
+        for c in range(len(rows[0])):
+            total += count_field(rows, r, c)
+    return total
 
 def main():
 #    rows = read_map('test1.txt')
 #    rows = read_map('test2.txt')
-    rows = read_map('test3.txt')
-#    rows = read_map('input.txt')
+#    rows = read_map('test3.txt')
+    rows = read_map('input.txt')
     start = find_start(rows)
     replace_start(rows, start)
     dist = start_advancing(rows, start)
-#    print(looppart)
-    for r in range(len(rows)):
-        print(count_inside_of_row(rows, r))
+    print(count_inside(rows))
 
 if __name__ == '__main__':
     main()
