@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import networkx as nx
+
 def read_wiring(filename):
     connections = []
     with open(filename, 'r') as f:
@@ -88,11 +90,37 @@ def remove_three_connections(wiring):
                     return val
     return 0
                     
+def connection_strengths(connections):
+    compos = {}
+    for c in connections:
+        left, right = c
+        if left in compos:
+            compos[left] += 1
+        else:
+            compos[left] = 1
+        if right in compos:
+            compos[right] += 1
+        else:
+            compos[right] = 1
+    return compos
+
 def main():
 #    wiring = read_wiring('test.txt')
     wiring = read_wiring('input.txt')
-    result = remove_three_connections(wiring)
-    print(result)
+#    result = remove_three_connections(wiring)
+#    print(result)
+#    strengths = connection_strengths(wiring)
+#    print(strengths)
+    graph = nx.from_edgelist(wiring)
+    betweenness = nx.edge_betweenness_centrality(graph)
+    most_important_connections = sorted(betweenness, key=betweenness.get)
+    connections_to_cut = most_important_connections[-3:]
+    graph.remove_edges_from(connections_to_cut)
+    groupsizes = [len(c) for c in nx.connected_components(graph)]
+    if len(groupsizes) != 2:
+        print('illegal number of groups')
+        exit(-1)
+    print(groupsizes[0] * groupsizes[1])
 
 
 if __name__ == '__main__':
