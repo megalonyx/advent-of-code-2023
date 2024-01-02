@@ -43,7 +43,7 @@ def turn_right(direc):
         exit(-1)
     return None
 
-def part1(rows):
+def partX(rows, min_steps, max_steps):
     height = len(rows)
     width = len(rows[0])
     startpos = (0, 0) # row, col
@@ -58,7 +58,7 @@ def part1(rows):
 
     while queue:
         cost, pos, direc, steps = heapq.heappop(queue)
-        if pos == targetpos:
+        if pos == targetpos and steps >= min_steps:
             return cost
         if (pos, direc, steps) in visited:
             continue
@@ -69,19 +69,19 @@ def part1(rows):
         # turn left:
         dr, dc = turn_left(direc)
         newr, newc = (oldr + dr, oldc + dc)
-        if (0 <= newr < height) and (0 <= newc < width):
+        if steps >= min_steps and (0 <= newr < height) and (0 <= newc < width):
             newcost = cost + rows[newr][newc]
             heapq.heappush(queue, ( newcost, (newr, newc), (dr, dc), 1 ) )
         # turn right:
         dr, dc = turn_right(direc)
         newr, newc = (oldr + dr, oldc + dc)
-        if (0 <= newr < height) and (0 <= newc < width):
+        if steps >= min_steps and (0 <= newr < height) and (0 <= newc < width):
             newcost = cost + rows[newr][newc]
             heapq.heappush(queue, ( newcost, (newr, newc), (dr, dc), 1 ) )
         # forward:
         dr, dc = direc
         newr, newc = (oldr + dr, oldc + dc)
-        if steps < 3 and (0 <= newr < height) and (0 <= newc < width):
+        if steps < max_steps and (0 <= newr < height) and (0 <= newc < width):
             newcost = cost + rows[newr][newc]
             heapq.heappush(queue, ( newcost, (newr, newc), direc, steps+1 ) )
 
@@ -93,7 +93,8 @@ def part1(rows):
 def main():
 #    rows = read_data('test.txt')
     rows = read_data('input.txt')
-    print(part1(rows))
+    print(partX(rows, 1, 3))
+    print(partX(rows, 4, 10))
 
 
 if __name__ == '__main__':
