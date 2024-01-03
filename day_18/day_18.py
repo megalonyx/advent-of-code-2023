@@ -13,12 +13,29 @@ DIRECTIONS = {
         'R': RIGHT
 }
 
+DIRFROMHEX = {
+        '0': RIGHT,
+        '1': DOWN,
+        '2': LEFT,
+        '3': UP
+}
+
 def read_plan(filename):
     plan = []
     with open(filename, 'r') as f:
         for line in f:
             direc, meters, color = line.strip().split()
-            plan.append( (direc, int(meters)) )
+            plan.append( (DIRECTIONS[direc], int(meters)) )
+    return plan
+
+def alternate_read_plan(filename):
+    plan = []
+    with open(filename, 'r') as f:
+        for line in f:
+            _, _, color = line.strip().split()
+            meters = int(color[2:7], 16)
+            direc = DIRFROMHEX[color[7]]
+            plan.append( (direc, meters) )
     return plan
 
 def grid_points_from_plan(plan):
@@ -26,7 +43,7 @@ def grid_points_from_plan(plan):
     points = [curr]
     for p in plan:
         direc, meters = p
-        delta = DIRECTIONS[direc]
+        delta = direc
         for _ in range(meters):
             curr = (curr[0] + delta[0], curr[1] + delta[1])
             points.append(curr)
@@ -44,10 +61,16 @@ def picks(points, area):
     return int(abs(area) - len(points)/2 + 1) + len(points)
 
 def main():
-#    plan = read_plan('test.txt')
-    plan = read_plan('input.txt')
+    plan = read_plan('test.txt')
+#    plan = read_plan('input.txt')
     gridpoints = grid_points_from_plan(plan)
     print(picks(gridpoints, shoelace(gridpoints)))
+
+#    plan = alternate_read_plan('test.txt')
+    plan = alternate_read_plan('input.txt')
+    gridpoints = grid_points_from_plan(plan)
+    print(picks(gridpoints, shoelace(gridpoints)))
+
 
 if __name__ == '__main__':
     main()
